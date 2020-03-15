@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "361242163410",
+    "firebase_url": "https://servicesforhome-1569957025625.firebaseio.com",
+    "project_id": "servicesforhome-1569957025625",
+    "storage_bucket": "servicesforhome-1569957025625.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361242163410:android:fd7488404eaba2271d950b",
+        "android_client_info": {
+          "package_name": "com.example.servicesforhome"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "361242163410-2chbqor15gnu061hdiqvlncrdcbs0o48.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvHsmmbuzJ76SZB7VjBITuZY2rpah3F_E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361242163410-2chbqor15gnu061hdiqvlncrdcbs0o48.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
