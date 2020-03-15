@@ -79,7 +79,9 @@ class SignIn : Fragment(), View.OnClickListener {
         callbackManager = CallbackManager.Factory.create()
 
         main_view.sign_in_button.setOnClickListener {
-            signIn()
+            /*signIn()*/
+            startActivity(Intent(context, Dashboard::class.java))
+            activity?.finish()
         }
 
 
