@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.example.servicesforhome.Dashboard
+import com.example.servicesforhome.Gps
 
 import com.example.servicesforhome.R
 import com.facebook.AccessToken
@@ -80,7 +81,7 @@ class SignIn : Fragment(), View.OnClickListener {
 
         main_view.sign_in_button.setOnClickListener {
             /*signIn()*/
-            startActivity(Intent(context, Dashboard::class.java))
+            startActivity(Intent(context, Gps::class.java))
             activity?.finish()
         }
 

@@ -1,30 +1,32 @@
 package com.example.servicesforhome
-
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.servicesforhome.Ui.ServiceProvider
 import kotlinx.android.synthetic.main.content_gps.*
+import android.content.Intent
+import android.provider.Settings
+import android.location.LocationManager
+import android.app.Activity
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
+
+
+
+
 
 
 class Gps : AppCompatActivity() {
     var locationManager: LocationManager? = null
     var GpsStatus: Boolean = false
-    var isNetworkEnabled: Boolean = false
-    private val GPS_ENABLE_REQUEST = 0x1001
-    private val WIFI_ENABLE_REQUEST = 0x1006
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gps)
         CheckGpsStatus()
         if(GpsStatus){
-            startActivity(Intent(this,
-                ServiceProvider::class.java))
+            startActivity(Intent(this,Dashboard::class.java))
 
             // close this activity
             finish()
@@ -32,8 +34,7 @@ class Gps : AppCompatActivity() {
         enable_location.setOnClickListener {
             CheckGpsStatus()
             if(GpsStatus){
-                startActivity(Intent(this,
-                    ServiceProvider::class.java))
+                startActivity(Intent(this,Dashboard::class.java))
 
                 // close this activity
                 finish()
@@ -44,37 +45,22 @@ class Gps : AppCompatActivity() {
 
 
         }
-        no_thanks.setOnClickListener {
-            startActivity(Intent(this,
-                ServiceProvider::class.java))
-
-            // close this activity
-            finish()
-        }
 
 
 
     }
 
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    ) {
-        super.onActivityResult(requestCode, resultCode, data)
-        startActivity(Intent(this,
-            ServiceProvider::class.java))
-        finish()
-    }
+    //    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (resultCode == Activity.RESULT_OK) {
+//
+//        }
+//    }
     fun CheckGpsStatus() {
 
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager?
 
         GpsStatus = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!
-
-
-    isNetworkEnabled =
-        locationManager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
 }

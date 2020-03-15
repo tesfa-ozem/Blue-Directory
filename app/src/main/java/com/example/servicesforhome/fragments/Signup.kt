@@ -16,6 +16,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.android.volley.VolleyError
 import com.example.servicesforhome.Dashboard
+import com.example.servicesforhome.Gps
 
 
 import com.example.servicesforhome.R
@@ -112,7 +113,7 @@ class Signup : Fragment() {
                     userDetaila(firebaseUser.displayName,email,firebaseUser.phoneNumber)
                     Toast.makeText(context,email,Toast.LENGTH_LONG).show()
                     startActivity(Intent(context,
-                        Dashboard::class.java))
+                        Gps::class.java))
                     activity?.finish()
 
                 } else {
