@@ -26,7 +26,7 @@ class Access : AppCompatActivity() {
         viewPager = viewpager
 
         tabLayout!!.addTab(tabLayout!!.newTab().setText("SIGN IN"))
-        tabLayout!!.addTab(tabLayout!!.newTab().setText("SIGN OUT"))
+        tabLayout!!.addTab(tabLayout!!.newTab().setText("SIGN UP"))
         tabLayout!!.tabGravity = TabLayout.GRAVITY_FILL
 
         val adapter = MyAdapter(this, supportFragmentManager, tabLayout!!.tabCount)

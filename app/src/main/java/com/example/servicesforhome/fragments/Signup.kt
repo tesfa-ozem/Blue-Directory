@@ -14,6 +14,7 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import com.android.volley.VolleyError
 import com.example.servicesforhome.R
+import com.example.servicesforhome.Ui.LoadingDialoge
 import com.example.servicesforhome.http.Api
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
@@ -99,6 +100,9 @@ class Signup : Fragment() {
 
     @SuppressLint("ShowToast")
     fun createAccount(userName: String, email: String, password: String) {
+        val newFragment = LoadingDialoge()
+        newFragment.show(childFragmentManager, "missiles")
+        val header = HashMap<String,String>()
         try {
             val jsonBody = JSONObject()
             jsonBody.put("username", userName )
@@ -108,14 +112,13 @@ class Signup : Fragment() {
             Api.getVolley(activity?.application, Api.POST, "sign_up", mRequestBody, object : Api.VolleyCallback {
                 override fun onSuccess(result: String) {
                     Log.i("response", result)
-
-
+                    newFragment.dismiss()
                 }
 
                 override fun onError(error: VolleyError) {
-
+                    newFragment.dismiss()
                 }
-            }, Api.URL
+            }, Api.URL,form_data = null,headers = header
             )
             /* auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task: Task<AuthResult> ->
                  if (task.isSuccessful) {
