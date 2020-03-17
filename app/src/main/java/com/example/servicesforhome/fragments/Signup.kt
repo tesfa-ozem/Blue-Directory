@@ -1,31 +1,25 @@
 package com.example.servicesforhome.fragments
 
+
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.util.Patterns
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.android.volley.VolleyError
-import com.example.servicesforhome.Dashboard
-import com.example.servicesforhome.Gps
-
-
 import com.example.servicesforhome.R
 import com.example.servicesforhome.http.Api
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import kotlinx.android.synthetic.main.fragment_signup.view.*
+import org.json.JSONObject
+
 
 
 private const val ARG_PARAM1 = "param1"
@@ -38,7 +32,7 @@ class Signup : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var auth: FirebaseAuth
-    lateinit var main_view:View
+    lateinit var main_view: View
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
@@ -54,24 +48,25 @@ class Signup : Fragment() {
     ): View? {
 
 
-
-
         main_view = inflater.inflate(R.layout.fragment_signup, container, false)
 
 
-        main_view.sign_up_button.setOnClickListener{
-            if(main_view.email_input.text.toString().isNotEmpty()&&main_view.password_input.text.toString().isNotEmpty()&&main_view.confirm_password_input.text.toString().isNotEmpty()){
-                if(main_view.confirm_password_input.text.toString()== main_view.password_input.text.toString()){
-                    createAccount(main_view.email_input.text.toString().trim(),main_view.password_input.text.toString().trim())
-                }else{
+        main_view.sign_up_button.setOnClickListener {
+            if (main_view.email_input.text.toString().isNotEmpty() && main_view.password_input.text.toString().isNotEmpty() && main_view.confirm_password_input.text.toString().isNotEmpty()) {
+                if (main_view.confirm_password_input.text.toString() == main_view.password_input.text.toString()) {
+                    createAccount(
+                        main_view.username_input.text.toString().trim(),
+                        main_view.email_input.text.toString().trim(),
+                        main_view.password_input.text.toString().trim()
+                    )
+                } else {
                     main_view.password_input.error = "Did not match"
                 }
 
-            }else{
+            } else {
                 main_view.email_input.validate("Valid email address required") { s -> s.isValidEmail() }
-                main_view.password_input.validate("Password must be 6 or more digits"){s ->s.isValidPassword()}
+                main_view.password_input.validate("Password must be 6 or more digits") { s -> s.isValidPassword() }
             }
-
 
 
         }
@@ -79,14 +74,14 @@ class Signup : Fragment() {
     }
 
     fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
-        this.addTextChangedListener(object: TextWatcher {
+        this.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 afterTextChanged.invoke(s.toString())
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
     }
 
@@ -97,57 +92,51 @@ class Signup : Fragment() {
         this.error = if (validator(this.text.toString())) null else message
     }
 
-    fun String.isValidEmail(): Boolean
-            = this.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
+    fun String.isValidEmail(): Boolean =
+        this.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
-    fun String.isValidPassword():Boolean
-            =this.isNotEmpty()&&this.length>=6
+    fun String.isValidPassword(): Boolean = this.isNotEmpty() && this.length >= 6
 
     @SuppressLint("ShowToast")
-    fun createAccount(email:String, password:String){
+    fun createAccount(userName: String, email: String, password: String) {
         try {
+            val jsonBody = JSONObject()
+            jsonBody.put("username", userName )
+            jsonBody.put("email", email)
+            jsonBody.put("password", password)
+            val  mRequestBody = jsonBody.toString()
+            Api.getVolley(activity?.application, Api.POST, "sign_up", mRequestBody, object : Api.VolleyCallback {
+                override fun onSuccess(result: String) {
+                    Log.i("response", result)
 
-            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task: Task<AuthResult> ->
-                if (task.isSuccessful) {
-                    val firebaseUser = auth.currentUser!!
-                    userDetaila(firebaseUser.displayName,email,firebaseUser.phoneNumber)
-                    Toast.makeText(context,email,Toast.LENGTH_LONG).show()
-                    startActivity(Intent(context,
-                        Gps::class.java))
-                    activity?.finish()
 
-                } else {
-                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                    //Log.e("Failed to autheniticate","Failed")
                 }
-            }
-        }catch (ex:FirebaseAuthException){
-            Log.e("createAccount",ex.localizedMessage)
+
+                override fun onError(error: VolleyError) {
+
+                }
+            }, Api.URL
+            )
+            /* auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task: Task<AuthResult> ->
+                 if (task.isSuccessful) {
+                     val firebaseUser = auth.currentUser!!
+                     userDetaila(firebaseUser.displayName,email,firebaseUser.phoneNumber)
+                     Toast.makeText(context,email,Toast.LENGTH_LONG).show()
+                     startActivity(Intent(context,
+                         Gps::class.java))
+                     activity?.finish()
+
+                 } else {
+                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                     //Log.e("Failed to autheniticate","Failed")
+                 }
+             }*/
+        } catch (ex: FirebaseAuthException) {
+            Log.e("createAccount", ex.localizedMessage)
         }
 
 
     }
-
-    fun userDetaila(name:String?,email: String,phoneNumber:String?){
-        var params = HashMap<String, String>()
-        params.put("name", name.toString())
-        params.put("email", phoneNumber.toString())
-        params.put("phone",email)
-        Api.getVolley(activity?.application,Api.POST,"user","",object :Api.VolleyCallback{
-            override fun onSuccess(result: String){
-                Log.i("response",result)
-
-
-
-
-            }
-
-            override fun onError(error: VolleyError) {
-
-            }
-        },Api.URL,params)
-    }
-
 
 
 }

@@ -15,4 +15,6 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_subctegory">SubctegoryActivity</string>
+    <string name="email_input">Type your email or user name</string>
+    <string name="title_activity_onboarding">Onboarding</string>
 </resources>

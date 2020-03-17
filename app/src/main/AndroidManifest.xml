@@ -23,10 +23,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".Ui.LoadingDialoge"></activity>
+        <activity
+            android:name=".Ui.Onboarding"
+            android:label="@string/title_activity_onboarding"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Ui.SubctegoryActivity"
             android:label="@string/title_activity_subctegory"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".test"
             android:label="@string/title_activity_test" />
@@ -81,7 +86,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

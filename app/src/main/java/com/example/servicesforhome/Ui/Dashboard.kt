@@ -16,6 +16,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
+import com.example.servicesforhome.Ui.Onboarding
 import com.example.servicesforhome.Ui.ServiceProvider
 
 
@@ -64,6 +65,9 @@ class Dashboard : AppCompatActivity() {
         })
         cleaning_card.setOnClickListener {
             startActivity(Intent(this, ServiceProvider::class.java)) }
+        add_fab.setOnClickListener{
+            startActivity(Intent(this, Onboarding::class.java))
+        }
 
     }
 

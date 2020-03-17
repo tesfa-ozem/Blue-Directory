@@ -1,10 +1,18 @@
 package com.example.servicesforhome
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Base64
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
+import com.android.volley.VolleyError
 import com.example.servicesforhome.adapters.MyAdapter
+import com.example.servicesforhome.http.Api
+import com.example.servicesforhome.models.LogedIn
 import com.google.android.material.tabs.TabLayout
+import com.google.gson.Gson
+import kotlinx.android.synthetic.main.access.*
+
 
 class Access : AppCompatActivity() {
 
@@ -14,8 +22,8 @@ class Access : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.access)
 
-        tabLayout = findViewById<TabLayout>(R.id.tabLayout2)
-        viewPager = findViewById<ViewPager>(R.id.viewpager)
+        tabLayout = tabLayout2
+        viewPager = viewpager
 
         tabLayout!!.addTab(tabLayout!!.newTab().setText("SIGN IN"))
         tabLayout!!.addTab(tabLayout!!.newTab().setText("SIGN OUT"))
@@ -38,5 +46,7 @@ class Access : AppCompatActivity() {
             }
         })
     }
+
+
 
 }

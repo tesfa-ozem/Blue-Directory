@@ -11,8 +11,8 @@ import com.google.gson.GsonBuilder
 import java.lang.Error
 
 
-object Api: Application(){
-    var URL = "http://52.226.66.148:8080/api/"
+object Api{
+    var URL = "https://58988ae1.ngrok.io/api/"
     var mGson = GsonBuilder()
         .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
         .setPrettyPrinting()
@@ -31,7 +31,8 @@ object Api: Application(){
         jsonRequest: String?,
         callback: VolleyCallback,
         apiUrl:String = URL,
-        form_data: Map<String, String>? = null
+        form_data: Map<String, String>? = null,
+        headers: Map<String, String>? = null
     ) {
 
         if (context != null) {
@@ -50,11 +51,9 @@ object Api: Application(){
                 callback.onError(error)
             }) {
                 @Throws(AuthFailureError::class)
-                override fun getHeaders(): Map<String, String> {
-                    val params = HashMap<String, String>()
+                override fun getHeaders(): Map<String, String>? {
 
-
-                    return params
+                    return headers
                 }
 
                 override fun getBodyContentType(): String {
@@ -139,11 +138,11 @@ object Api: Application(){
         fun onError(error: VolleyError)
     }
 
-    fun save(context: Context, key: String, value: String) {
-        val prefs = context.getSharedPreferences("com.aw.enformentclamping.pref", Context.MODE_PRIVATE)
-        val editor = prefs.edit()
-        editor.putString(key, value)
-        editor.apply()
+    fun save(context: Application?, key: String, value: String) {
+        val prefs = context?.getSharedPreferences("com.aw.enformentclamping.pref", Context.MODE_PRIVATE)
+        val editor = prefs?.edit()
+        editor?.putString(key, value)
+        editor?.apply()
 
     }
 
@@ -153,8 +152,8 @@ object Api: Application(){
         return prefs.getString(key, "")
     }
 
-    fun clearValue(context: Context, key: String) {
-        val settings = context.getSharedPreferences("com.aw.enformentclamping.pref", Context.MODE_PRIVATE)
-        settings.edit().remove(key).apply()
+    fun clearValue(context: Application?, key: String) {
+        val settings = context?.getSharedPreferences("com.aw.enformentclamping.pref", Context.MODE_PRIVATE)
+        settings?.edit()?.remove(key)?.apply()
     }
 }

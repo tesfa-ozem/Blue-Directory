@@ -26,8 +26,7 @@ data class Category (
         parcel.readInt(),
         parcel.readString()!!,
         parcel.createTypedArrayList(Subcategories)!!
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(icon)
@@ -66,9 +65,7 @@ data class Subcategories (
         parcel.readInt(),
         parcel.readString().toString(),
         parcel.readString().toString()
-    ) {
-    }
-
+    )
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeStringList(accounts)
         parcel.writeInt(category)

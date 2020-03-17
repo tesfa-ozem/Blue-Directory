@@ -20,6 +20,46 @@
             >
 
             <TextView
+                android:id="@+id/username_input_lable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:fontFamily="@font/quicksand_medium"
+                android:text="USER NAME"
+
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.171"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+
+                android:id="@+id/username_input"
+                android:layout_width="288dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_shape"
+                android:drawableStart="@drawable/user_name"
+                android:drawableLeft="@drawable/user_name"
+                android:drawablePadding="5dp"
+                android:hint="User name"
+                android:inputType="textEmailAddress"
+                android:nextFocusDown="@id/password_input"
+                android:paddingStart="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.504"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="85dp"
+            android:layout_gravity="center"
+
+            >
+
+            <TextView
                 android:id="@+id/email_input_lable"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
