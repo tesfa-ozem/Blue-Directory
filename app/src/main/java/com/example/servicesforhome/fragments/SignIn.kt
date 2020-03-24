@@ -2,18 +2,23 @@ package com.example.servicesforhome.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
+import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import com.android.volley.VolleyError
 import com.example.servicesforhome.Dashboard
 import com.example.servicesforhome.Gps
 
 import com.example.servicesforhome.R
+import com.example.servicesforhome.Ui.ErrorDialoge
 import com.example.servicesforhome.Ui.LoadingDialoge
 import com.example.servicesforhome.http.Api
 import com.example.servicesforhome.models.DataToken
@@ -78,48 +83,31 @@ class SignIn : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
         main_view = inflater.inflate(R.layout.fragment_sign_in, container, false)
-        /*val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        main_view.facebook_login.setOnClickListener{
 
-        }
-
-        callbackManager = CallbackManager.Factory.create()*/
 
         main_view.sign_in_button.setOnClickListener {
-            signIn(main_view.email_input.text.toString(),main_view.password_input.text.toString())
+            if (main_view.email_input.text.toString()
+                    .isNotEmpty() && main_view.password_input.text.toString().isNotEmpty()
+            ) {
+                if (main_view.password_input.text.toString().isValidPassword()) {
+                    signIn(
+                        main_view.email_input.text.toString(),
+                        main_view.password_input.text.toString()
+                    )
+                } else {
+                    main_view.password_input.error = "Try again"
+                }
+
+            } else {
+                main_view.email_input.validate("Valid email address required") { s -> s.isValidEmail() }
+                main_view.password_input.validate("Password must be 6 or more digits") { s -> s.isValidPassword() }
+            }
 
 
         }
 
-        /*main_view.facebook_login.setReadPermissions("email", "public_profile")
-        main_view.facebook_login.registerCallback(callbackManager, object :
-            FacebookCallback<LoginResult> {
-            override fun onSuccess(loginResult: LoginResult) {
-                Log.d(TAG, "facebook:onSuccess:$loginResult")
-                handleFacebookAccessToken(loginResult.accessToken)
-            }
-
-            override fun onCancel() {
-                Log.d(TAG, "facebook:onCancel")
-                // [START_EXCLUDE]
-                //updateUI(null)
-                // [END_EXCLUDE]
-            }
-
-            override fun onError(error: FacebookException) {
-                Log.d(TAG, "facebook:onError", error)
-                // [START_EXCLUDE]
-                //updateUI(null)
-                // [END_EXCLUDE]
-            }
-        })
-        googleSignInClient = GoogleSignIn.getClient(context!!.applicationContext, gso)*/
 
 
-        // Inflate the layout for this fragment
         return main_view
     }
 
@@ -133,7 +121,7 @@ class SignIn : Fragment(), View.OnClickListener {
                 // Sign in success, update UI with the signed-in user's information
                 Log.d(TAG, "signInWithCredential:success")
                 val user = auth.currentUser
-                if(user!=null){
+                if (user != null) {
                     startActivity(Intent(context, Dashboard::class.java))
                     activity?.finish()
                 }
@@ -149,39 +137,44 @@ class SignIn : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun signIn(userName:String,password:String) {
+    private fun signIn(userName: String, password: String) {
         val newFragment = LoadingDialoge()
         newFragment.show(childFragmentManager, "missiles")
+        val errorFragment = ErrorDialoge()
+
         /*startActivity(Intent(context,Gps::class.java))
         activity?.finish()*/
-       /* val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)*/
+        /* val signInIntent = googleSignInClient.signInIntent
+         startActivityForResult(signInIntent, RC_SIGN_IN)*/
 
         try {
-            val header = HashMap<String,String>()
+            val header = HashMap<String, String>()
             val jsonBody = JSONObject()
-            var creds:String = String.format("%s:%s",userName,password)
+            var creds: String = String.format("%s:%s", userName, password)
             var auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.NO_WRAP)
             header["Authorization"] = auth
-            Api.getVolley(activity?.application, Api.POST, "token","", object : Api.VolleyCallback {
-                override fun onSuccess(result: String) {
-                    newFragment.dismiss()
-                    Api.clearValue(activity?.application,"Token")
-                    val gson = Gson()
-                    val token = gson.fromJson(result, DataToken::class.java)
+            Api.getVolley(
+                activity?.application, Api.POST, "token", "", object : Api.VolleyCallback {
+                    override fun onSuccess(result: String) {
+                        newFragment.dismiss()
+                        Api.clearValue(activity?.application, "Token")
+                        val gson = Gson()
+                        val token = gson.fromJson(result, DataToken::class.java)
 
-                    Api.save(activity?.application,"Token",token.token)
-                    startActivity(Intent(context, Gps::class.java))
-                    activity?.finish()
-                }
+                        Api.save(activity?.application, "Token", token.token)
+                        startActivity(Intent(context, Gps::class.java))
+                        activity?.finish()
+                    }
 
-                override fun onError(error: VolleyError) {
-                    newFragment.dismiss()
-                }
-            }, Api.URL,form_data = null,headers = header
+                    override fun onError(error: VolleyError) {
+                        newFragment.dismiss()
+                        Toast.makeText(context,error.toString(),Toast.LENGTH_LONG).show()
+                        errorFragment.show(childFragmentManager, "missiles")
+                    }
+                }, Api.localUrl, form_data = null, headers = header
             )
-        }catch (e:Exception){
-            Toast.makeText(context,e.toString(),Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show()
         }
 
     }
@@ -212,34 +205,60 @@ class SignIn : Fragment(), View.OnClickListener {
 
         val credential = FacebookAuthProvider.getCredential(token.token)
         auth.signInWithCredential(credential).addOnCompleteListener { task: Task<AuthResult> ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
-                    val user = auth.currentUser
-                    if(user!=null){
-                        startActivity(Intent(context, Dashboard::class.java))
-                        activity?.finish()
-                    }
-                } else {
-                    signOut()
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    Toast.makeText(context, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show()
-                    //updateUI(null)
+            if (task.isSuccessful) {
+                // Sign in success, update UI with the signed-in user's information
+                Log.d(TAG, "signInWithCredential:success")
+                val user = auth.currentUser
+                if (user != null) {
+                    startActivity(Intent(context, Dashboard::class.java))
+                    activity?.finish()
                 }
-
-                // [START_EXCLUDE]
-                //hideProgressDialog()
-                // [END_EXCLUDE]
+            } else {
+                signOut()
+                // If sign in fails, display a message to the user.
+                Log.w(TAG, "signInWithCredential:failure", task.exception)
+                Toast.makeText(
+                    context, "Authentication failed.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                //updateUI(null)
             }
+
+            // [START_EXCLUDE]
+            //hideProgressDialog()
+            // [END_EXCLUDE]
+        }
     }
 
 
     fun signOut() {
-       auth.signOut()
-       LoginManager.getInstance().logOut()
-   }
+        auth.signOut()
+        LoginManager.getInstance().logOut()
+    }
+
+    fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
+        this.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                afterTextChanged.invoke(s.toString())
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+    }
+
+    fun EditText.validate(message: String, validator: (String) -> Boolean) {
+        this.afterTextChanged {
+            this.error = if (validator(it)) null else message
+        }
+        this.error = if (validator(this.text.toString())) null else message
+    }
+
+    fun String.isValidEmail(): Boolean =
+        this.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
+
+    fun String.isValidPassword(): Boolean = this.isNotEmpty() && this.length >= 4
 
     companion object {
         private const val TAG = "GoogleActivity"

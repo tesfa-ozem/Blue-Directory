@@ -45,7 +45,7 @@
                 android:drawablePadding="5dp"
                 android:hint="User name"
                 android:inputType="textEmailAddress"
-                android:nextFocusDown="@id/password_input"
+                android:nextFocusDown="@id/username_input"
                 android:paddingStart="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

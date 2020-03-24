@@ -66,6 +66,7 @@ class Dashboard : AppCompatActivity() {
         cleaning_card.setOnClickListener {
             startActivity(Intent(this, ServiceProvider::class.java)) }
         add_fab.setOnClickListener{
+
             startActivity(Intent(this, Onboarding::class.java))
         }
 

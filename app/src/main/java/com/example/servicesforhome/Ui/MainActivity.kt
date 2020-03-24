@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                 // close this activity
                 finish()
             }
-        }, Api.URL,form_data = null,headers = header
+        }, Api.localUrl,form_data = null,headers = header
         )
     }
 }

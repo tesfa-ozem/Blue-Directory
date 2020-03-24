@@ -37,14 +37,7 @@ class SubctegoryActivity : AppCompatActivity() {
                     }
             }
 
-            /*val intent: Intent = intent
 
-            var list: ArrayList<Subcategories>? = ArrayList<Subcategories>()
-            list = intent.getParcelableArrayListExtra("subCategory")
-            subCategoryRecyclerView = findViewById(R.id.sub_category_list)
-            subCategoryRecyclerView.layoutManager = GridLayoutManager(applicationContext, 1)
-            subCategoryRecyclerView.adapter =
-                SubcategoryAdapter(list) { subcategories: Subcategories -> SubClicked(subcategories) }*/
 
         } catch (ex: Exception) {
             Log.e("Recycler view", ex.toString())

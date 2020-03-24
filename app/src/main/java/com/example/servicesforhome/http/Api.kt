@@ -12,7 +12,8 @@ import java.lang.Error
 
 
 object Api{
-    var URL = "https://58988ae1.ngrok.io/api/"
+    var localUrl = "https://home-service-api.herokuapp.com/api/"
+    var URL = "https://home-service-api.herokuapp.com/api/"
     var mGson = GsonBuilder()
         .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
         .setPrettyPrinting()
@@ -42,7 +43,7 @@ object Api{
             Log.i("### REQUEST", jsonRequest)
             Log.i("###", form_data.toString())
 
-            val stringRequest = object : StringRequest(requestMethod, url, Response.Listener { response ->
+            val stringRequest = object : StringRequest(requestMethod, url, Response.Listener   { response ->
                 Log.i("### RESPONSE", response)
 
                 callback.onSuccess(response)

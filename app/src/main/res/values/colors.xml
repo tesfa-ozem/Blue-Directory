@@ -91,4 +91,6 @@
     <color name="gray_text">#8B8B8B</color>
     <color name="gps_color">#DFFFFFFF</color>
     <color name="background">#dddddd</color>
+    <color name="success">#4CAF50</color>
+    <color name="error">#A53939</color>
 </resources>

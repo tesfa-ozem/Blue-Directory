@@ -15,12 +15,12 @@ import androidx.fragment.app.Fragment
 import com.android.volley.VolleyError
 import com.example.servicesforhome.R
 import com.example.servicesforhome.Ui.LoadingDialoge
+import com.example.servicesforhome.Ui.SuccessDialoge
 import com.example.servicesforhome.http.Api
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import kotlinx.android.synthetic.main.fragment_signup.view.*
 import org.json.JSONObject
-
 
 
 private const val ARG_PARAM1 = "param1"
@@ -53,7 +53,10 @@ class Signup : Fragment() {
 
 
         main_view.sign_up_button.setOnClickListener {
-            if (main_view.email_input.text.toString().isNotEmpty() && main_view.password_input.text.toString().isNotEmpty() && main_view.confirm_password_input.text.toString().isNotEmpty()) {
+            if (main_view.email_input.text.toString()
+                    .isNotEmpty() && main_view.password_input.text.toString()
+                    .isNotEmpty() && main_view.confirm_password_input.text.toString().isNotEmpty()
+            ) {
                 if (main_view.confirm_password_input.text.toString() == main_view.password_input.text.toString()) {
                     createAccount(
                         main_view.username_input.text.toString().trim(),
@@ -102,38 +105,36 @@ class Signup : Fragment() {
     fun createAccount(userName: String, email: String, password: String) {
         val newFragment = LoadingDialoge()
         newFragment.show(childFragmentManager, "missiles")
-        val header = HashMap<String,String>()
+        var successDialoge = SuccessDialoge()
+
+        val header = HashMap<String, String>()
         try {
             val jsonBody = JSONObject()
-            jsonBody.put("username", userName )
+            jsonBody.put("username", userName)
             jsonBody.put("email", email)
             jsonBody.put("password", password)
-            val  mRequestBody = jsonBody.toString()
-            Api.getVolley(activity?.application, Api.POST, "sign_up", mRequestBody, object : Api.VolleyCallback {
-                override fun onSuccess(result: String) {
-                    Log.i("response", result)
-                    newFragment.dismiss()
-                }
+            val mRequestBody = jsonBody.toString()
+            Api.getVolley(
+                activity?.application,
+                Api.POST,
+                "sign_up",
+                mRequestBody,
+                object : Api.VolleyCallback {
+                    override fun onSuccess(result: String) {
+                        Log.i("response", result)
+                        newFragment.dismiss()
+                        successDialoge.show(childFragmentManager,"success")
+                    }
 
-                override fun onError(error: VolleyError) {
-                    newFragment.dismiss()
-                }
-            }, Api.URL,form_data = null,headers = header
+                    override fun onError(error: VolleyError) {
+                        newFragment.dismiss()
+                    }
+                },
+                Api.localUrl,
+                form_data = null,
+                headers = header
             )
-            /* auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task: Task<AuthResult> ->
-                 if (task.isSuccessful) {
-                     val firebaseUser = auth.currentUser!!
-                     userDetaila(firebaseUser.displayName,email,firebaseUser.phoneNumber)
-                     Toast.makeText(context,email,Toast.LENGTH_LONG).show()
-                     startActivity(Intent(context,
-                         Gps::class.java))
-                     activity?.finish()
 
-                 } else {
-                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                     //Log.e("Failed to autheniticate","Failed")
-                 }
-             }*/
         } catch (ex: FirebaseAuthException) {
             Log.e("createAccount", ex.localizedMessage)
         }
