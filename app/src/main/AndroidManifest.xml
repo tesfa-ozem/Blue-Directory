@@ -30,11 +30,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".Ui.SuccessDialoge"></activity>
         <activity android:name=".Ui.ProviderProfile" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".Ui.ErrorDialoge" />
         <activity android:name=".Ui.LoadingDialoge" />
@@ -94,7 +90,11 @@
             android:label="@string/title_activity_sign_up"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Ui.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

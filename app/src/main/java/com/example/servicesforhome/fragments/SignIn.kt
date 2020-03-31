@@ -141,12 +141,6 @@ class SignIn : Fragment(), View.OnClickListener {
         val newFragment = LoadingDialoge()
         newFragment.show(childFragmentManager, "missiles")
         val errorFragment = ErrorDialoge()
-
-        /*startActivity(Intent(context,Gps::class.java))
-        activity?.finish()*/
-        /* val signInIntent = googleSignInClient.signInIntent
-         startActivityForResult(signInIntent, RC_SIGN_IN)*/
-
         try {
             val header = HashMap<String, String>()
             val jsonBody = JSONObject()
@@ -170,6 +164,7 @@ class SignIn : Fragment(), View.OnClickListener {
                         newFragment.dismiss()
                         Toast.makeText(context,error.toString(),Toast.LENGTH_LONG).show()
                         errorFragment.show(childFragmentManager, "missiles")
+
                     }
                 }, Api.localUrl, form_data = null, headers = header
             )
