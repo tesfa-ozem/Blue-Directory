@@ -1,5 +1,6 @@
 package com.example.servicesforhome.fragments
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -7,32 +8,24 @@ import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
 import android.util.Patterns
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
-import com.android.volley.VolleyError
+import androidx.fragment.app.Fragment
+import com.android.volley.*
 import com.example.servicesforhome.Dashboard
 import com.example.servicesforhome.Gps
-
 import com.example.servicesforhome.R
-import com.example.servicesforhome.Ui.ErrorDialoge
 import com.example.servicesforhome.Ui.LoadingDialoge
 import com.example.servicesforhome.http.Api
 import com.example.servicesforhome.models.DataToken
+import com.example.servicesforhome.utilities.ErrorHandler.volleyHandler
 import com.facebook.AccessToken
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
 import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
-import com.google.android.gms.auth.TokenData
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
@@ -42,48 +35,38 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_sign_in.view.*
+import kotlinx.android.synthetic.main.response_modal.view.*
 import org.json.JSONObject
-import java.lang.Exception
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [SignIn.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [SignIn.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SignIn : Fragment(), View.OnClickListener {
+    private lateinit var errorView: View
+    private lateinit var successDialog: AlertDialog
+    private lateinit var failedDialog:AlertDialog
+    private lateinit var factory: LayoutInflater
     override fun onClick(p0: View?) {
 
     }
-
-    // TODO: Rename and change types of parameters
-    private lateinit var callbackManager: CallbackManager
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
     }
 
-    private lateinit var googleSignInClient: GoogleSignInClient
-
     lateinit var main_view: View
 
     private lateinit var auth: FirebaseAuth
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         main_view = inflater.inflate(R.layout.fragment_sign_in, container, false)
-
+        factory = LayoutInflater.from(context)
+        errorView = factory.inflate(R.layout.response_modal, null)
+        successDialog = AlertDialog.Builder(context).create()
+        failedDialog = AlertDialog.Builder(context).create()
 
         main_view.sign_in_button.setOnClickListener {
             if (main_view.email_input.text.toString()
@@ -140,12 +123,11 @@ class SignIn : Fragment(), View.OnClickListener {
     private fun signIn(userName: String, password: String) {
         val newFragment = LoadingDialoge()
         newFragment.show(childFragmentManager, "missiles")
-        val errorFragment = ErrorDialoge()
         try {
             val header = HashMap<String, String>()
             val jsonBody = JSONObject()
-            var creds: String = String.format("%s:%s", userName, password)
-            var auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.NO_WRAP)
+            val creds: String = String.format("%s:%s", userName, password)
+            val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.NO_WRAP)
             header["Authorization"] = auth
             Api.getVolley(
                 activity?.application, Api.POST, "token", "", object : Api.VolleyCallback {
@@ -162,8 +144,16 @@ class SignIn : Fragment(), View.OnClickListener {
 
                     override fun onError(error: VolleyError) {
                         newFragment.dismiss()
-                        Toast.makeText(context,error.toString(),Toast.LENGTH_LONG).show()
-                        errorFragment.show(childFragmentManager, "missiles")
+                        errorView.error_message.text = volleyHandler(error)
+
+                        errorView.error_dissmis_button.setOnClickListener {
+                            failedDialog.dismiss()
+                        }
+
+                        failedDialog.setCancelable(false)
+
+                        failedDialog.setView(errorView)
+                        failedDialog.show()
 
                     }
                 }, Api.localUrl, form_data = null, headers = header

@@ -120,7 +120,7 @@ class Onboarding : AppCompatActivity() {
     ) {
         val newFragment = LoadingDialoge()
         newFragment.show(supportFragmentManager,"loading")
-        val errorDialoge = ErrorDialoge()
+
 
         val header = HashMap<String, String>()
         val token = Api.getValue(baseContext,"Token")
@@ -147,21 +147,11 @@ class Onboarding : AppCompatActivity() {
             }
 
             override fun onError(error: VolleyError) {
-                errorDialoge.show(supportFragmentManager,"error")
+
                 newFragment.dismiss()
 
                 val gson = Gson()
-                if (error is TimeoutError || error is NoConnectionError) {
-                    Log.e("TimeoutError",error.toString())
-                } else if (error is AuthFailureError) {
-                    Log.e("AuthFailureError",error.toString())
-                } else if (error is ServerError) {
-                    Log.e("ServerError",error.toString())
-                } else if (error is NetworkError) {
-                    Log.e("NetworkError",error.toString())
-                } else if (error is ParseError) {
-                    Log.e("ParseError",error.toString())
-                }
+
             }
         }, Api.localUrl, form_data = null, headers = header)
     }

@@ -2,6 +2,7 @@ package com.example.servicesforhome.fragments
 
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,11 +16,13 @@ import androidx.fragment.app.Fragment
 import com.android.volley.VolleyError
 import com.example.servicesforhome.R
 import com.example.servicesforhome.Ui.LoadingDialoge
-import com.example.servicesforhome.Ui.SuccessDialoge
 import com.example.servicesforhome.http.Api
+import com.example.servicesforhome.utilities.ErrorHandler
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import kotlinx.android.synthetic.main.activity_success_dialoge.view.*
 import kotlinx.android.synthetic.main.fragment_signup.view.*
+import kotlinx.android.synthetic.main.response_modal.view.*
 import org.json.JSONObject
 
 
@@ -34,6 +37,11 @@ class Signup : Fragment() {
     private var param2: String? = null
     private lateinit var auth: FirebaseAuth
     lateinit var main_view: View
+    private lateinit var errorView: View
+    private lateinit var successView: View
+    private lateinit var successDialog: AlertDialog
+    private lateinit var failedDialog:AlertDialog
+    private lateinit var factory: LayoutInflater
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
@@ -50,8 +58,11 @@ class Signup : Fragment() {
 
 
         main_view = inflater.inflate(R.layout.fragment_signup, container, false)
-
-
+        factory = LayoutInflater.from(context)
+        errorView = factory.inflate(R.layout.response_modal, null)
+        successView = factory.inflate(R.layout.activity_success_dialoge,null)
+        successDialog = AlertDialog.Builder(context).create()
+        failedDialog = AlertDialog.Builder(context).create()
         main_view.sign_up_button.setOnClickListener {
             if (main_view.email_input.text.toString()
                     .isNotEmpty() && main_view.password_input.text.toString()
@@ -105,7 +116,6 @@ class Signup : Fragment() {
     fun createAccount(userName: String, email: String, password: String) {
         val newFragment = LoadingDialoge()
         newFragment.show(childFragmentManager, "missiles")
-        var successDialoge = SuccessDialoge()
 
         val header = HashMap<String, String>()
         try {
@@ -123,11 +133,28 @@ class Signup : Fragment() {
                     override fun onSuccess(result: String) {
                         Log.i("response", result)
                         newFragment.dismiss()
-                        successDialoge.show(childFragmentManager,"success")
+                        successView.success_message_id.text = "Successfully Created"
+                        successView.success_dismiss_button.setOnClickListener {
+                            successDialog.dismiss()
+                        }
+                        successDialog.setCancelable(false)
+                        successDialog.setView(successView)
+                        successDialog.show()
+
                     }
 
                     override fun onError(error: VolleyError) {
                         newFragment.dismiss()
+                        errorView.error_message.text = ErrorHandler.volleyHandler(error)
+
+                        errorView.error_dissmis_button.setOnClickListener {
+                            failedDialog.dismiss()
+                        }
+
+                        failedDialog.setCancelable(false)
+
+                        failedDialog.setView(errorView)
+                        failedDialog.show()
                     }
                 },
                 Api.localUrl,
